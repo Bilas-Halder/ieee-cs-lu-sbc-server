@@ -7,6 +7,7 @@ const { ObjectID } = require('bson');
 const mongodb = require('./mongoInit.js');
 
 
+const committeeMembers = require('./routes/committeeMembers.js');
 const committee = require('./routes/committee.js');
 const userUpload = require('./routes/uploads.js');
 
@@ -18,18 +19,9 @@ const port = process.env.PORT || 5000;
 
 //middleWares
 app.use(cors());
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader(
-//         'Access-Control-Allow-Headers',
-//         'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-//     );
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-
-//     next();
-// });
 app.use(express.json());
 
+app.use('/committee-members', committeeMembers);
 app.use('/committee', committee);
 app.use('/upload', userUpload);
 app.use('/uploads/images', express.static('uploads/images'));
