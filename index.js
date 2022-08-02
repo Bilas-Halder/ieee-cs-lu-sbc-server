@@ -1,15 +1,9 @@
 const express = require('express');
-const { MongoClient } = require('mongodb');
 const cors = require('cors');
-const ObjectId = require('mongodb').ObjectId;
-const { ObjectID } = require('bson');
+const mongoose = require('mongoose');
 
-const mongodb = require('./mongoInit.js');
-
-
-const committeeMembers = require('./routes/committeeMembers.js');
-const committee = require('./routes/committee.js');
-const userUpload = require('./routes/uploads.js');
+const members = require('./routes/memberRoutes.js');
+const executiveCommittee = require('./routes/executiveCommitteeRoutes');
 
 
 require('dotenv').config()
@@ -17,22 +11,17 @@ require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
 
+mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('Connected to DB'))
+    .catch(err => console.log(err));
+
 //middleWares
 app.use(cors());
 app.use(express.json());
 
-app.use('/committee-members', committeeMembers);
-app.use('/committee', committee);
-app.use('/upload', userUpload);
-app.use('/uploads/images', express.static('uploads/images'));
 
-
-try {
-    mongodb.connectToMongoServer();
-}
-catch (e) {
-    console.log(e);
-}
+app.use('/members', members);
+app.use('/committee', executiveCommittee);
 
 
 app.get('/', (req, res) => {
