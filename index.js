@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 const members = require('./routes/memberRoutes.js');
 const executiveCommittee = require('./routes/executiveCommitteeRoutes');
+const eventsRoutes = require('./routes/eventsRoutes');
 
 
 require('dotenv').config()
@@ -22,6 +23,7 @@ app.use(express.json());
 
 app.use('/members', members);
 app.use('/committee', executiveCommittee);
+app.use('/events', eventsRoutes);
 
 
 app.get('/', (req, res) => {
