@@ -126,8 +126,12 @@ router.get("/:year/dummy/search/:searchTerm", async (req, res) => {
       ...response,
     ];
 
-    const final = dummy.filter((data) => {
-      return data?.name.toLowerCase().includes(searchTerm);
+    const final = [];
+    dummy.map((data) => {
+      const newName = data?.name.toLowerCase().replace(/\s/g, "");
+      if (newName.includes(searchTerm.toLowerCase()) === true) {
+        final.push(data);
+      }
     });
 
     res.status(200).json(final);
