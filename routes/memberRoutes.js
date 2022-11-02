@@ -1,100 +1,94 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const mongoose = require('mongoose');
-const memberSchema = require('../schemas/memberSchema');
 
-const Member = mongoose.model('Member', memberSchema);
+const {
+    signUpValidators,
+    loginValidators,
+    deleteValidators,
+    validationHandler,
+    updateValidator,
+} = require("../middlewares/members/memberValidator");
 
+const {
+    signUpController,
+    deleteAccountController,
+    loginController,
+    verifyEmailController,
+    confirmationController,
+    updateController,
+} = require("../controllers/members/members");
+const {
+    getQueryController,
+    makeAdminController,
+    makeModeratorController,
+    makeUserController,
+    makeLocalController,
+    makeGlobalController,
+} = require("../controllers/members/adminActivity");
 
-router.get('/', (req, res) => {
-    Member.find({}, (err, members) => {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.status(200).send(members);
-        }
-    });
-});
+// const sendMail = require("../utilities/sendMail");
 
-router.get('/emails', async (req, res) => {
-    // Member.find({})
-    //     .select({
-    //         email: 1,// will return only email & _id
-    //     })
-    //     .exec((err, data) => {
-    //         if (err) {
-    //             res.status(500).send(err);
-    //         } else {
-    //             res.status(200).send(data);
-    //         }
-    //     });
+const authGuard = require("../middlewares/AuthGuards/authGuard");
+const adminAuthGuard = require("../middlewares/AuthGuards/adminAuthGuard");
 
-    // can be handled this way too
-    try {
-        const members = await Member.find({})
-            .select({
-                email: 1,// will return only email & _id
-            });
-        res.status(200).send(members);
-    }
-    catch (err) {
-        res.status(500).send(err);
-    }
-});
+router.get("/", authGuard, getQueryController);
+/*
+    --- above route take query parameters and return array of selected members
+    --- parameters can be sort, page, limit, fields(selected fields will be on the output), and other filters like name=bilas
+    --- Ex : /members?page=2&limit=4&fields=email,name,passingYear,-id&sort=passingYear
+*/
 
-router.get('/:id', async (req, res) => {
-    const id = req.params.id;
-    try {
-        const member = await Member.findById(id);
-        res.status(200).send(member);
-    }
-    catch (err) {
-        res.status(500).send(err);
-    }
-});
+router.get("/verifyEmail/:email", verifyEmailController);
+router.get("/confirmation/:email/:token", confirmationController);
 
 // Post
-router.post('/', (req, res) => {
-    const member = new Member({ ...req.body });
-    member.save((err, member) => {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.status(201).send(member);
-        }
-    });
-});
+router.post("/signup", signUpValidators, validationHandler, signUpController);
 
-router.post('/many', (req, res) => {
-    const members = req.body;
-    Member.insertMany(members, (err, members) => {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.status(201).send(members);
-        }
-    });
-});
+router.post("/login", loginValidators, validationHandler, loginController);
+
+// router.post("/sendMail", async (req, res) => {
+//     try {
+//         const info = await sendMail({
+//             to: "cse_1912020049@lus.ac.bd",
+//             subject: "I am here now ✔",
+//             textMsg: "abrakadabra",
+//             htmlMsg: "<b>Hello0o0o0o0o world?</b>",
+//         });
+
+//         res.status(201).send({
+//             msg: "Successful",
+//             info,
+//         });
+//     } catch (err) {
+//         res.status(500).send(err);
+//     }
+// });
 
 // Update
-router.put('/:id', (req, res) => {
-    const id = req.params.id;
-    Member.findByIdAndUpdate(
-        { _id: id },
-        { $set: req.body },
-        {
-            useFindAndModify: false,
-            new: true // to return the updated document
-        },
 
-        (err, member) => {
-            if (err) {
-                res.status(500).send(err);
-            } else {
-                res.status(200).send(member);
-            }
-        });
-});
+router.put(
+    "/",
+    authGuard,
+    updateValidator,
+    validationHandler,
+    updateController
+);
 
+// Delete
+router.delete(
+    "/",
+    authGuard,
+    deleteValidators,
+
+    validationHandler,
+    deleteAccountController
+);
+
+// Admin Activity
+router.get("/admin/makeAdmin/:id", adminAuthGuard, makeAdminController);
+router.get("/admin/makeModerator/:id", adminAuthGuard, makeModeratorController);
+router.get("/admin/makeUser/:id", adminAuthGuard, makeUserController);
+router.get("/admin/makeLocalMember/:id", adminAuthGuard, makeLocalController);
+router.get("/admin/makeGlobalMember/:id", adminAuthGuard, makeGlobalController);
 
 module.exports = router;

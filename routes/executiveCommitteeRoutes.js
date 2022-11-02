@@ -1,15 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-const executiveCommitteeSchema = require("../schemas/executiveCommitteeSchema");
-const memberSchema = require("../schemas/memberSchema");
+const executiveCommitteeSchema = require("../models/executiveCommitteeSchema");
+const Member = require("../models/memberSchema");
 
 const ExecutiveCommittee = mongoose.model(
   "ExecutiveCommittee",
   executiveCommitteeSchema
 );
-
-const Member = mongoose.model("Member", memberSchema);
 
 router.get("/:year", async (req, res) => {
   try {
