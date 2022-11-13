@@ -8,8 +8,10 @@ const {
     uploadNewCommitteeMemberController,
     deleteCommitteeController,
     removeMemberFromCommitteeController,
+    getDummyCommitteeController,
 } = require("../controllers/committee/committee");
 
+router.get("/getDummy", getDummyCommitteeController);
 router.get("/:year", getSingleCommitteeController);
 
 // Post

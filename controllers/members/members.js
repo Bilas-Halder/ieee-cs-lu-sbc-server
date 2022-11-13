@@ -278,13 +278,10 @@ const confirmationController = async (req, res) => {
                     msg: "You don't have an account. Please Signup.",
                 });
             } else if (member?.verified) {
-                res.status(200).sendFile(
-                    path.join(
-                        __dirname,
-                        "../",
-                        "public/htmlResponses/alreadyVerified.html"
-                    )
-                );
+                res.render("alreadyVerified", {
+                    page: "Already Verified | IEEE CS LU SBC",
+                    link: process.env.CLIENT_LIVE_LINK,
+                });
             } else {
                 member.verified = true;
 
@@ -294,22 +291,24 @@ const confirmationController = async (req, res) => {
                             msg: "Error ocurred! Please try again.",
                         });
                     } else {
-                        return res
-                            .status(200)
-                            .sendFile(
-                                path.join(
-                                    __dirname,
-                                    "../",
-                                    "public/htmlResponses/verifiedSuccess.html"
-                                )
-                            );
+                        return res.render("verifiedSuccess", {
+                            page: "Successfully Verified | IEEE CS LU SBC",
+                            link: process.env.CLIENT_LIVE_LINK,
+                        });
                     }
                 });
             }
         } else {
-            res.status(498).send({
-                msg: "Your verification link may have expired. Please click on resend for verify your Email.",
+            res.render("linkExpired", {
+                page: "Link Expired | IEEE CS LU SBC",
+                link:
+                    process.env.LIVE_SERVER_LINK +
+                    "/api/v1/members/verifyemail/" +
+                    email,
             });
+            // res.status(498).send({
+            //     msg: "Your verification link may have expired. Please click on resend for verify your Email.",
+            // });
         }
     } catch (err) {
         res.status(400).send("<h1>Bad Request</h1>");

@@ -27,6 +27,9 @@ mongoose
 app.use(cors());
 app.use(express.json());
 
+// view engine setup
+app.set("view engine", "ejs");
+
 // app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/v1/members", members);
@@ -39,7 +42,13 @@ app.use(
     "/avatars",
     express.static(path.join(__dirname, "public/uploads/avatars"))
 );
-app.use("/", express.static(path.join(__dirname, "public")));
+app.use("/public", express.static(path.join(__dirname, "public")));
+
+// This is only for development purpose, remove before production
+app.get("/view/:page", (req, res) => {
+    const vars = req.query;
+    res.render(req.params.page, vars);
+});
 
 app.get("/", (req, res) => {
     res.send("Hello EveryOne!");

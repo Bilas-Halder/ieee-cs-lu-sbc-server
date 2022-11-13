@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%= page %></title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+
+        <link rel="icon" href="https://i.ibb.co/hKyMJrp/logo192.png" />
+
+        <style>
+            .resend-button {
+                display: inline-block;
+                cursor: pointer;
+                padding: 1.2rem 2rem 1.2rem 2rem;
+                border: 3px solid #0152a1;
+                border-radius: 10px;
+                background-color: #0152a1;
+                color: #fff;
+                font-size: 1.1rem;
+                line-height: 0px;
+                text-decoration: none;
+                transition: all 0.2s ease;
+            }
+
+            .resend-button:hover {
+                background-color: white;
+                color: #0152a1;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <a href="<%= link %>" id="signin"><%= link %></a>
+
+        <script>
+            swal({
+                title: "Link Maybe Expired!",
+                text: "Click resend to get new Verification Link.",
+                icon: "https://i.ibb.co/7gnHvqq/expired-icon.png",
+                button: {
+                    text: "Resend!",
+                    closeModal: false,
+                    className: "resend-button",
+                },
+                closeOnClickOutside: false,
+            })
+                .then((name) => {
+                    const a = document.getElementById("signin");
+                    console.log(a.href);
+                    return fetch(a.href);
+                })
+                .then((results) => {
+                    return results.json();
+                })
+                .then((json) => {
+                    console.log(json);
+
+                    swal({
+                        title: "Request Done!",
+                        text: json?.msg,
+                        icon: "https://i.ibb.co/7gnHvqq/expired-icon.png",
+                    });
+                })
+                .catch((err) => {
+                    if (err) {
+                        swal("Oh noo!", "Request failed!", "error");
+                    } else {
+                        swal.stopLoading();
+                        swal.close();
+                    }
+                });
+        </script>
+    </body>
+</html>

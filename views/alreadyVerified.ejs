@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%= page %></title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+        <link rel="icon" href="https://i.ibb.co/hKyMJrp/logo192.png" />
+    </head>
+    <body>
+        <a href="<%= link %>" id="signin" style="display: none"><%= link %></a>
+
+        <script>
+            swal({
+                title: "Already Verified!",
+                text: "Please sign in to continue...",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                buttons: ["Sign In", "Not Now"],
+                closeOnClickOutside: false,
+                closeOnConfirm: false,
+            }).then((result) => {
+                console.log(result);
+                if (!result) {
+                    document.getElementById("signin").click();
+                }
+            });
+        </script>
+    </body>
+</html>

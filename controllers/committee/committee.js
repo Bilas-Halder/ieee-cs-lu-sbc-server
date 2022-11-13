@@ -24,6 +24,29 @@ const getSingleCommitteeController = async (req, res, next) => {
         res.status(500).json({error: err});
     }
 };
+const getDummyCommitteeController = async (req, res, next) => {
+    try {
+        const year = req.params?.year;
+
+        const committee = await Committee.findOne({year: year}).populate({
+            path: "membersList.member",
+            select: "-password -type -verified -role -createdAt -updatedAt -__v",
+        });
+        if (!committee) {
+            next(createError(404, `Don't found a committee for ${year}!`));
+            return;
+        }
+        const {membersList} = committee;
+        membersList.sort((a, b) => (a.priority < b.priority ? -1 : 1)); // add name priority too
+
+        res.status(200).json({
+            dataCount: membersList.length,
+            data: membersList,
+        });
+    } catch (err) {
+        res.status(500).json({error: err});
+    }
+};
 
 const newCommitteeController = (req, res) => {
     const {year, period} = req.body;
@@ -146,4 +169,5 @@ module.exports = {
     uploadNewCommitteeMemberController,
     deleteCommitteeController,
     removeMemberFromCommitteeController,
+    getDummyCommitteeController,
 };
