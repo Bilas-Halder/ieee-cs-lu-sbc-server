@@ -11,7 +11,7 @@ const authGuard = (req, res, next) => {
         const {email, _id} = decode;
         req.email = email;
         req.id = _id;
-        req.authorization = authorization;
+        req.authorization = authorization.split(" ")[1];
         next();
     } catch (err) {
         if (err.message === "jwt expired") {

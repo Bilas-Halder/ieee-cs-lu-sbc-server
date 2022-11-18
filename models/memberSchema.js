@@ -17,7 +17,10 @@ const memberSchema = new mongoose.Schema(
         },
         membershipID: String,
         passingYear: String,
-        imgUrl: String,
+        imgUrl: {
+            type: String,
+            default: "https://i.ibb.co/FzCXQJH/ieee-Default-Avater.jpg",
+        },
         batch: String,
         description: String,
         type: {

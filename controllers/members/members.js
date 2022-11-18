@@ -7,7 +7,6 @@ const jwt = require("jsonwebtoken");
 const sendMail = require("../../utilities/sendMail");
 
 const signUpController = async (req, res) => {
-    console.log({...req.body});
     const {name, email, password} = req.body;
     const hashedPassword = await bcrypt.hash(password, 11);
     const member = new Member({
@@ -125,7 +124,6 @@ const loginController = async (req, res) => {
 const deleteAccountController = (req, res) => {
     const query = {email: req.body?.email};
     Member.findOne(query, async (err, data) => {
-        console.log(data);
         if (err) {
             res.status(400).json(err);
         } else if (!data) {
@@ -176,8 +174,6 @@ const deleteAccountController = (req, res) => {
 
 const updateController = async (req, res) => {
     const id = req.id;
-    console.log(req.id);
-
     const {password, email, type, verified, role, ...updates} = req.body;
 
     try {
