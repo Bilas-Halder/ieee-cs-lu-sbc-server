@@ -19,6 +19,7 @@ const adminAuthGuard = async (req, res, next) => {
         ) {
             req.email = email;
             req.id = _id;
+            req.authorization = authorization;
             next();
         } else {
             next(createError(401, "Authentication Failure!"));

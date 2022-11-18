@@ -5,7 +5,6 @@ const Member = require("../../models/memberSchema");
 const VerificationToken = require("../../models/verificationTokenSchema");
 const jwt = require("jsonwebtoken");
 const sendMail = require("../../utilities/sendMail");
-const path = require("path");
 
 const signUpController = async (req, res) => {
     console.log({...req.body});
@@ -177,11 +176,10 @@ const deleteAccountController = (req, res) => {
 
 const updateController = async (req, res) => {
     const id = req.id;
+    console.log(req.id);
 
     const {password, email, type, verified, role, ...updates} = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 11);
-    updates.password = hashedPassword;
     try {
         const member = await Member.findByIdAndUpdate(
             {_id: id},
@@ -194,12 +192,14 @@ const updateController = async (req, res) => {
 
         const {password, ...rest} = member._doc;
 
-        res.status(500).send({
+        res.status(200).send({
+            status: 200,
             msg: "Successfully Updated!",
-            data: rest,
+            data: {accessToken: req.authorization, ...rest},
         });
     } catch {
         res.status(500).send({
+            status: 500,
             msg: "Failed to update please try again!",
         });
     }
@@ -280,7 +280,7 @@ const confirmationController = async (req, res) => {
             } else if (member?.verified) {
                 res.render("alreadyVerified", {
                     page: "Already Verified | IEEE CS LU SBC",
-                    link: process.env.CLIENT_LIVE_LINK,
+                    link: process.env.CLIENT_LIVE_LINK + "/signin",
                 });
             } else {
                 member.verified = true;
@@ -293,7 +293,7 @@ const confirmationController = async (req, res) => {
                     } else {
                         return res.render("verifiedSuccess", {
                             page: "Successfully Verified | IEEE CS LU SBC",
-                            link: process.env.CLIENT_LIVE_LINK,
+                            link: process.env.CLIENT_LIVE_LINK + "/signin",
                         });
                     }
                 });
